@@ -36,7 +36,17 @@ public class FirebaseStorageService {
     }
 
     //Sube un archivo de imagen al almacenamiento de Firebase.    
-    public String uploadImage(MultipartFile localFile, String folder, Long id) throws IOException {
+    public String uploadImage(MultipartFile localFile, String folder, Object id) throws IOException {
+        
+         long longId;
+        if (id instanceof Long) {
+            longId = (Long) id;
+        } else if (id instanceof Integer) {
+            longId = ((Integer) id).longValue();
+        } else {
+            throw new IllegalArgumentException("El ID debe ser de tipo Long o Integer, se recibió: " + id.getClass().getSimpleName());
+        }
+        
         String originalName = localFile.getOriginalFilename();
         String fileExtension = "";
         if (originalName != null && originalName.contains(".")) {
@@ -44,8 +54,7 @@ public class FirebaseStorageService {
         }
 
         // Se genera el nombre del archivo con un formato consistente.
-        String fileName = "img" + getFormattedNumber(id) + fileExtension;
-
+        String fileName = "img" + getFormattedNumber(longId) + fileExtension;
         File tempFile = convertToFile(localFile);
 
         try {
